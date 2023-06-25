@@ -22,5 +22,6 @@ rad.json
 TestResults.xml
 
 node_modules
+_index.html
 
 dist
