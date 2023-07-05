@@ -36,27 +36,57 @@
 
 #### 四、API && CONTENT_TYPES
 
-1. ###### API
+1. ### 常用API
 
-   - 
+   - `transform` API 是操作单个字符串，而不是访问文件系统的。这个可以是在没有文件系统的环境（比如浏览器）下，使用，也可以作为另一个工具链的一部分, 例如：
+   
+      ```js
+      require('esbuild').transform('console.log(5555)', {
+          loader: 'js',
+      }).then((res) => {
+          console.log(res.code);
+      });
+      ```
+   
+   - `build`API 调用 build API **操作文件系统**中的一个或多个文件。 它允许文件互相引用并且打包在一起。例如：建一个test2.js，在test2.js里面引入test.js,然后打包输出 test2.js
+   
+      ```js
+      require('esbuild').build({
+        entryPoints: ['test2.js'],
+        bundle: true,
+        outfile: 'out.js'
+      })
+      ```
+   
+   注： `buildSync` 和 `transformSync` 它们会导致两方面不良后果
+   
+   > 一方面容易使 Esbuild 在当前线程阻塞，丧失并发任务处理的优势
+   >
+   > 另一方面，Esbuild 所有插件中都不能使用任何异步操作，这给插件开发增加了限制
+   
+   - `serve`API 
 
-2. ###### CONTENT_TYPES
+2. ### [CONTENT_TYPES](https://esbuild.github.io/content-types/)
 
-   - 
+   - esbuild加载器的作用与webpack中loader作用类似，都是对于某种类型的文件进行编译
 
 #### 五、PLUGINS
 
-1. ###### HOOKS 
+​	一个esbuild插件是一个包含name和setup函数的对象
 
-   - 
+1. ### HOOKS 
 
-2. ###### 手写一个插件
+2. ### 插件示例
 
-   - 
+   - plugin-imageHandler 图片处理插件
+   - plugin-http-url-handler 加载外部资源
+   - plugin-html 动态生成html模板
 
+3. 插件的使命
 
+   		- 目前不可能直接修改AST。这个限制的存在是为了保持esbuild出色的性能特征, 同时也是为了避免暴露出太多的API表面，这将是一个维护的负担，并且会阻止涉及改变AST的改进
 
+   		- 一种考虑esbuild的方式是作为网络的 "链接器"。就像本地代码的链接器一样，esbuild的工作是接收一组文件，解析并绑定它们之间的引用，并生成一个包含所有代码链接的单一文件。一个插件的工作是生成最终被链接的单个文件
+   		- esbuild中的插件最好是在相对范围内工作，并且只定制构建的一个小方面. 例如: plugin-imageHandler
 
-
-
-
+六、CRA 转 esbuild
