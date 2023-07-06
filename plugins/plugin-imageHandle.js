@@ -8,7 +8,7 @@ module.exports = function imageHandler() {
         console.log('watching...', args)
       })
 
-      // Redirect all paths starting with "images/" to "./public/images/"
+      // 重定向 "images/" to "./public/images/"
       build.onResolve({ filter: /\.jpg$/ }, args => {
         console.log(args)
         return {
